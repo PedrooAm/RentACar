@@ -20,13 +20,15 @@ def CriarConta():
 def Log_in():
     print("Escolheu a opção 2") 
     input("Clique ENTER para continuar\n")
-    system('cls')  
+    system('cls') 
+    subprocess.run(["python", "LogIn.py"]) 
 
 
 def Alugar_Veiculo():
     print("Escolheu a opção 3") 
     input("Clique ENTER para continuar\n")
-    system('cls')  
+    system('cls') 
+    subprocess.run(["python", "AlugarVeiculo.py"]) 
 
 
 def Fechar():
