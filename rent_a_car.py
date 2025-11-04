@@ -10,28 +10,28 @@ def display_menu(menu):
 
 
 def CriarConta():
-    print("you have selected menu option one") # Simulate function output.
-    input("Press Enter to Continue\n")
+    print("Escolheu a opcão 1") 
+    input("Clique ENTER para continuar\n")
     system('cls')
     subprocess.run(["python", "CriarConta.py"])
     
 
 
 def Log_in():
-    print("you have selected menu option two") # Simulate function output.
-    input("Press Enter to Continue\n")
-    system('cls')  # clears stdout
+    print("Escolheu a opção 2") 
+    input("Clique ENTER para continuar\n")
+    system('cls')  
 
 
 def Alugar_Veiculo():
-    print("you have selected menu option three") # Simulate function output.
-    input("Press Enter to Continue\n")
-    system('cls')  # clears stdout
+    print("Escolheu a opção 3") 
+    input("Clique ENTER para continuar\n")
+    system('cls')  
 
 
 def Fechar():
     system('cls')  
-    print("Goodbye")
+    print("Adeus!")
     sys.exit()
 
 
@@ -43,9 +43,9 @@ def main():
     while True:
         display_menu(menu_items)
         selection = int(
-            input("Please enter your selection number: "))  # Get function key
-        selected_value = menu_items[selection]  # Gets the function name
-        selected_value()  # add parentheses to call the function
+            input("Por favor escolha uma opção: "))  
+        selected_value = menu_items[selection]  
+        selected_value()  
 
 
 if __name__ == "__main__":
