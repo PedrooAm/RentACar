@@ -2,9 +2,12 @@ import subprocess
 import sys
 from os import system
 
+from AlugarVeiculo import Alugar
 
 def display_menu(menu):
 
+
+    print("\n===== MENU RENT A CAR ===== \U0001F697")
     for k, function in menu.items():
         print(k, function.__name__)
 
@@ -13,7 +16,7 @@ def CriarConta():
     print("Escolheu a opcão 1") 
     input("Clique ENTER para continuar\n")
     system('cls')
-    subprocess.run(["python", "CriarConta.py"])
+   
     
 
 
@@ -28,7 +31,9 @@ def Alugar_Veiculo():
     print("Escolheu a opção 3") 
     input("Clique ENTER para continuar\n")
     system('cls') 
-    subprocess.run(["python", "AlugarVeiculo.py"]) 
+    Alug = Alugar()
+    Alug.display_menu()
+    
 
 
 def Fechar():
