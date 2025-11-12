@@ -4,12 +4,15 @@ from os import system
 
 from AlugarVeiculo import Alugar
 
+
+
 def display_menu(menu):
 
 
     print("\n===== MENU RENT A CAR ===== \U0001F697")
-    for k, function in menu.items():
-        print(k, function.__name__)
+  
+    for k, (descricao,_) in menu.items():
+        print(f"{k} -{descricao}" )
 
 
 def CriarConta():
@@ -32,7 +35,7 @@ def Alugar_Veiculo():
     input("Clique ENTER para continuar\n")
     system('cls') 
     Alug = Alugar()
-    Alug.display_menu()
+    Alug.executar()
     
 
 
@@ -44,15 +47,25 @@ def Fechar():
 
 def main():
  
-    functions_names = [CriarConta, Log_in, Alugar_Veiculo, Fechar]
-    menu_items = dict(enumerate(functions_names, start=1))
+    menu_items = {
+            1: ("Criar Conta",CriarConta),
+            2: ("Iniciar Sessão",Log_in),
+            3: ("Alugar Veiculo",Alugar_Veiculo),
+            4: ("Fechar",Fechar)
+        }
 
     while True:
         display_menu(menu_items)
-        selection = int(
-            input("Por favor escolha uma opção: "))  
-        selected_value = menu_items[selection]  
-        selected_value()  
+        try:
+            selection = int(input("Por favor escolha uma opção: "))
+            item = menu_items.get(selection)
+            if item:
+                descricao, func = item  
+                func()                  
+            else:
+                print("Opção inválida.\n")
+        except ValueError:
+            print("Por favor insira um número válido.\n")
 
 
 if __name__ == "__main__":
