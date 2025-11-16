@@ -7,20 +7,20 @@ from Carros import Carros
 class Alugar:
     def __init__(self):
        
+        
         self.menu_items = {
-            1: self.listar_carros_disponiveis,
-            2: self.voltar_ao_main,
-            3: self.fechar
+            1: ("Listar carros disponíveis", self.listar_carros_disponiveis),
+            2: ("Voltar ao menu principal", self.voltar_ao_main),
+            3: ("Fechar", self.fechar)
         }
 
     def display_menu(self):
-        
-        print("\n===== MENU RENT A CAR =====")
-        for key, func in self.menu_items.items():
-            print(f"{key} - {func.__name__}")
+        system('cls')
+        print("\n===== MENU RENT A CAR (ALUGAR) =====")
+        for key, (descricao, _) in self.menu_items.items():
+            print(f"{key} - {descricao}")
 
     def listar_carros_disponiveis(self):
-        
         print("Escolheu a opção 1")
         input("Clique ENTER para continuar\n")
         system('cls')  
@@ -28,29 +28,44 @@ class Alugar:
         carros.executar()
 
     def voltar_ao_main(self):
-       
         print("Escolheu a opção 2")
         input("Clique ENTER para continuar\n")
         system('cls')
-        subprocess.run(["python", "rent_a_car.py"])
+     
+        return
 
-    def fechar(self):
-      
-        system('cls')
-        print("Adeus!")
-        sys.exit()
+    def menu(self):
         
         while True:
             self.display_menu()
+            selection_str = input("Por favor escolha uma opção: ").strip()
+            
             try:
-                selection = int(input("Por favor escolha uma opção: "))
-                action = self.menu_items.get(selection)
-                if action:
-                    action()
-                else:
-                    print("Opção inválida. Tente novamente.\n")
+                selection = int(selection_str)
             except ValueError:
                 print("Por favor insira um número válido.\n")
+                input("Pressione ENTER para continuar...")
+                continue
+
+            item = self.menu_items.get(selection)
+            if not item:
+                print("Opção inválida. Tente novamente.\n")
+                input("Pressione ENTER para continuar...")
+                continue
+
+            descricao, func = item
+            if func == self.voltar_ao_main:
+               
+                func()
+                return
+            func()
+            
+    def fechar(self):
+        system('cls')
+        print("Adeus!")
+        sys.exit()
+
+
 
 
 
