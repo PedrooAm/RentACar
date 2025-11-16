@@ -9,15 +9,15 @@ class Alugar:
        
         
         self.menu_items = {
-            1: ("Listar carros disponíveis", self.listar_carros_disponiveis),
-            2: ("Voltar ao menu principal", self.voltar_ao_main),
-            3: ("Fechar", self.fechar)
+            1: ("Listar carros disponiveis",self.listar_carros_disponiveis),
+            2: ("Voltar ao menu principal",self.voltar_ao_main),
+            3: ("Encerrar",self.fechar)
         }
 
     def display_menu(self):
-        system('cls')
-        print("\n===== MENU RENT A CAR (ALUGAR) =====")
-        for key, (descricao, _) in self.menu_items.items():
+        
+        print("\n===== MENU RENT A CAR =====")
+        for key, (descricao,_) in self.menu_items.items():
             print(f"{key} - {descricao}")
 
     def listar_carros_disponiveis(self):
@@ -35,13 +35,29 @@ class Alugar:
         return
 
     def menu(self):
+        subprocess.run(["python", "rent_a_car.py"])
+        sys.exit()
+
+    def fechar(self):
+      
+        system('cls')
+        print("Adeus!")
+        sys.exit()
         
+    def executar(self):
         while True:
             self.display_menu()
-            selection_str = input("Por favor escolha uma opção: ").strip()
-            
             try:
-                selection = int(selection_str)
+                opcao = int(input("Escolha uma opção: "))
+                item = self.menu_items.get(opcao)
+                if item:
+                    descricao, acao = item
+                    acao()
+                    
+                    if acao == self.voltar_ao_main:
+                        break
+                else:
+                    print("Opção inválida.\n")
             except ValueError:
                 print("Por favor insira um número válido.\n")
                 input("Pressione ENTER para continuar...")
