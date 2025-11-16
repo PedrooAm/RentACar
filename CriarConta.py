@@ -1,7 +1,14 @@
+import sqlite3
+import re
+
+def conectar_bd():
+    conn = sqlite3.connect('RentACar.db')
+    return conn
 
 
 def validar_email(email: str) -> bool:
-    return "@" in email and "." in email
+    padrao = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    return re.match(padrao, email) is not None
 
 
 def validar_password(password: str) -> bool:
@@ -23,14 +30,23 @@ def criar_conta() -> dict:
         print("Password demasiado curta.")
         password = input("Password: ").strip()
 
-    dados = {
-        "nome": nome,
-        "email": email,
-        "password": password 
-    }
+    conn = conectar_bd()
+    cursor = conn.cursor()
 
-    print("\n Conta criada com sucesso.")
-    return dados
+    try:
+        cursor.execute("""
+            INSERT INTO users (nome, email, password, is_admin)
+            VALUES (?, ?, ?, 0)
+        """, (nome, email, password))
+        conn.commit()
+        print("\n Conta criada com sucesso!")
+    except sqlite3.IntegrityError as e:
+        print(f" Erro: {e}")
+        print("Pode ser que o email já exista na base de dados.")
+    finally:
+        conn.close()
+
+    input("Pressione ENTER para voltar ao menu...")
 
 
 
