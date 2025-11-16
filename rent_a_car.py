@@ -1,6 +1,7 @@
 import subprocess
 import sys
 from os import system
+from CriarConta import criar_conta
 
 
 def display_menu(menu):
@@ -13,7 +14,7 @@ def CriarConta():
     print("Escolheu a opcão 1") 
     input("Clique ENTER para continuar\n")
     system('cls')
-    subprocess.run(["python", "CriarConta.py"])
+    criar_conta()
     
 
 
