@@ -18,7 +18,7 @@ def display_menu(menu):
 
 def CriarConta():
     print("\nEscolheu a opção: Criar Conta") 
-    input("Pressione ENTER para continuar...")
+    input("Pressione ENTER para continuar....")
     system('cls')
     criar = Conta()
     criar.CriarConta()
