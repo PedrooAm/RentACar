@@ -3,71 +3,75 @@ import msvcrt
 
 DB_NAME = "Bd/RentACar.db"
 
-def conectar():
-    return sqlite3.connect(DB_NAME)
+class AuthBase:
+    def __init__(self, db_name: str = DB_NAME):
+        self.db_name = db_name
 
-def buscar_usuario(nome_ou_email):
-    """Busca usuário pelo nome ou email na tabela 'users'."""
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute(
-        "SELECT id, nome, email, password FROM users WHERE nome=? OR email=?",
-        (nome_ou_email, nome_ou_email)
-    )
-    resultado = cursor.fetchone()
-    conn.close()
-    return resultado
+    def conectar(self):
+        return sqlite3.connect(self.db_name)
 
-def input_password(prompt="Password: "):
-    """Lê a password com asteriscos, permite mostrar/esconder com Tab."""
-    password = ""
-    mostrar = False
-    print(prompt, end="", flush=True)
+    def buscar_utilizador(self, nome_ou_email):
+        conn = self.conectar()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT id, nome, email, password FROM users WHERE nome=? OR email=?",
+            (nome_ou_email, nome_ou_email)
+        )
+        resultado = cursor.fetchone()
+        conn.close()
+        return resultado
 
-    while True:
-        tecla = msvcrt.getch()
-        if tecla in (b'\r', b'\n'):  
-            print()
-            break
+class Login(AuthBase):
+    def __init__(self, db_name: str = DB_NAME):
+        super().__init__(db_name)
+        self.session_user = None
 
-        elif tecla == b'\x08':  
-            if len(password) > 0:
-                password = password[:-1]
-                print("\b \b", end="", flush=True)
+    def input_password(self, prompt: str = "Password: "):
+        password = ""
+        mostrar = False
+        print(prompt, end="", flush=True)
 
-        elif tecla == b'\t':  
-            mostrar = not mostrar
-            print("\r" + prompt + (password if mostrar else "*" * len(password)), end="", flush=True)
+        while True:
+            tecla = msvcrt.getch()
+            if tecla in (b'\r', b'\n'):
+                print()
+                break
+            elif tecla == b'\x08':  
+                if len(password) > 0:
+                    password = password[:-1]
+                    print("\b \b", end="", flush=True)
+            elif tecla == b'\t':  
+                mostrar = not mostrar
+                print("\r" + prompt + (password if mostrar else "*" * len(password)), end="", flush=True)
+            elif tecla in b'\x00\xe0':  
+                msvcrt.getch()
+            else:
+                try:
+                    caractere = tecla.decode()
+                except:
+                    continue
+                password += caractere
+                print(caractere if mostrar else "*", end="", flush=True)
 
-        elif tecla in b'\x00\xe0':  
-            msvcrt.getch()
+        return password
 
+    def autenticar(self):
+        print("=== Login ===")
+        utilizador_input = input("Nome ou Email: ").strip()
+        password_input = self.input_password("Password (Tab para mostrar/esconder): ")
+
+        utilizador = self.buscar_utilizador(utilizador_input)
+
+        if utilizador is None:
+            print("Utilizador não encontrado!")
+            return False
+
+        uid, nome, email, password_db = utilizador
+
+        if password_input == password_db:
+            self.session_user = {"id": uid, "nome": nome, "email": email}
+            print(f"Bem-vindo(a), {nome}!")
+            return True
         else:
-            caractere = tecla.decode()
-            password += caractere
-            print(caractere if mostrar else "*", end="", flush=True)
-
-    return password
-
-def login():
-    print("=== Login ===")
-    usuario_input = input("Nome ou Email: ").strip()
-    password_input = input_password("Password (Tab para mostrar/esconder): ")
-
-    usuario = buscar_usuario(usuario_input)
-
-    if usuario is None:
-        print("Usuário não encontrado!")
-        return False
-
-    _, nome, email, password_db = usuario
-
-    if password_input == password_db:
-        print(f"Bem-vindo(a), {nome}!")
-        return True
-    else:
-        print("Password incorreta!")
-        return False
-
-if __name__ == "__main__":
-    login()
+            print("Password incorreta!")
+            return False
