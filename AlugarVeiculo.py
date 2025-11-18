@@ -5,7 +5,7 @@ from Carros import Carros
 
 class Alugar:
     def __init__(self):
-        # cada entrada é (descrição, função)
+       
         self.menu_items = {
             1: ("Listar carros disponiveis", self.listar_carros_disponiveis),
             2: ("Voltar ao menu principal", self.voltar_ao_main),
@@ -30,11 +30,10 @@ class Alugar:
         print("Escolheu a opção 2")
         input("Clique ENTER para continuar\n")
         system('cls')
-        # retorna ao menu principal simplesmente saindo do método menu()
         return
 
     def menu(self):
-        # loop do submenu — chama as ações; volta ao menu principal quando necessário
+    
         while True:
             self.display_menu()
             selection_str = input("Por favor escolha uma opção: ").strip()
@@ -54,7 +53,7 @@ class Alugar:
             descricao, func = item
             if func == self.voltar_ao_main:
                 func()
-                return  # volta ao menu principal
+                return  
             func()
 
     def fechar(self):
