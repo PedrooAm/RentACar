@@ -21,7 +21,7 @@ def CriarConta():
     input("Pressione ENTER para continuar...")
     system('cls')
     criar = Conta()
-    criar.CriarConta()
+    criar.criar_conta()
 
 def Log_in():
     print("\nEscolheu a opção: Iniciar Sessão") 
@@ -29,13 +29,13 @@ def Log_in():
     system('cls') 
     subprocess.run(["python", "LogIn.py"]) 
 
-def Alugar_Veiculo():
+"""def Alugar_Veiculo():
     print("\nEscolheu a opção: Iniciar Sessão") 
     input("Pressione ENTER para continuar...")
     system('cls')
     Alug = Alugar()
     Alug.menu()
-     
+   """  
 
 def Fechar():
     system('cls')  
@@ -48,7 +48,7 @@ def main():
     menu_items = {
         "1": ("Criar Conta", CriarConta),
         "2": ("Iniciar Sessão", Log_in),
-        "3": ("Alugar Veículo", Alugar_Veiculo),
+       ## "3": ("Alugar Veículo", Alugar_Veiculo),
         "4": ("Fechar Programa", Fechar)
     }
 
