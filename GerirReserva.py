@@ -102,7 +102,19 @@ def alterar_reserva():
         print(f"Reserva alterada com sucesso! Cliente tem direito a reembolso de {-diferenca}€")
     else:
         print("Reserva alterada com sucesso! Sem diferença de preço.")
-        
+    
+def cancelar_reserva():
+    listar_reservas()
+    reserva_id = input("ID da reserva a cancelar: ")
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE reservas SET estado='cancelada' WHERE id=?", (reserva_id,))
+    conn.commit()
+    conn.close()
+
+    print("Reserva cancelada!")
 
 def gerir_reservas():
     while True:
