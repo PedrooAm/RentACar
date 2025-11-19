@@ -16,15 +16,27 @@ class GerirReservas:
         cursor = conn.cursor()
 
         if user_id:
-            cursor.execute("SELECT * FROM reservas WHERE user_id=?", (user_id,))
+            cursor.execute("""
+                SELECT reservas.id, reservas.user_id, reservas.carro_id, carros.marca, carros.modelo, reservas.data_inicio, reservas.data_fim, reservas.preco_total, reservas.estado
+                FROM reservas 
+                JOIN carros ON reservas.carro_id = carros.id
+                WHERE reservas.user_id = ?
+            """, (user_id,))
         else:
-            cursor.execute("SELECT * FROM reservas")
+            cursor.execute("""
+                SELECT reservas.id, reservas.user_id, reservas.carro_id, carros.nome, reservas.data_inicio, reservas.data_fim, reservas.preco_total, reservas.estado
+                FROM reservas 
+                JOIN carros ON reservas.carro_id = carros.id
+            """)
 
         reservas = cursor.fetchall()
         conn.close()
-
         if not reservas:
             print(" Não existem reservas.")
+            return
+
+        if not reservas:
+            print("Não existem reservas.")
             return
 
         print("\n--- LISTA DE RESERVAS ---")
@@ -32,11 +44,11 @@ class GerirReservas:
             print(f"""
     ID: {r[0]}
     User: {r[1]}
-    Carro: {r[2]}
-    Início: {r[3]}
-    Fim: {r[4]}
-    Estado: {r[5]}
-    Preço: {r[6]}€
+    Carro: {r[2]} - {r[3]} {r[4]}
+    Início: {r[5]}
+    Fim: {r[6]}
+    Preço: {r[7]}€
+    Estado: {r[8]}
             """)
         print("--------------------------\n")
 
