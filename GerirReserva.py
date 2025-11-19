@@ -11,7 +11,7 @@ class GerirReservas:
             return sqlite3.connect(self.db_path)
 
 
-    def listar_reservas(self, user_id=None):
+    def listar_reservas(self, user_id):
         conn = self.conectar()
         cursor = conn.cursor()
 
@@ -24,7 +24,7 @@ class GerirReservas:
             """, (user_id,))
         else:
             cursor.execute("""
-                SELECT reservas.id, reservas.user_id, reservas.carro_id, carros.nome, reservas.data_inicio, reservas.data_fim, reservas.preco_total, reservas.estado
+                SELECT reservas.id, reservas.user_id, reservas.carro_id, carros.marca, carros.modelo, reservas.data_inicio, reservas.data_fim, reservas.preco_total, reservas.estado
                 FROM reservas 
                 JOIN carros ON reservas.carro_id = carros.id
             """)
@@ -52,8 +52,8 @@ class GerirReservas:
             """)
         print("--------------------------\n")
 
-    def alterar_reserva(self):
-        self.listar_reservas()
+    def alterar_reserva(self, user_id=None):
+        self.listar_reservas(user_id)
         reserva_id = input("ID da reserva a alterar: ")
 
         nova_data_inicio = input("Nova data de início (YYYY-MM-DD): ")
@@ -85,7 +85,7 @@ class GerirReservas:
         carro_id, preco_antigo = resultado
 
         # obter preço do carro
-        cursor.execute("SELECT preco_por_dia FROM carros WHERE id=?", (carro_id,))
+        cursor.execute("SELECT preco_dia FROM carros WHERE id=?", (carro_id,))
         resultado_carro = cursor.fetchone()
         if not resultado_carro:
             print("Carro não encontrado!")
@@ -143,9 +143,9 @@ class GerirReservas:
             if escolha == "1":
                 self.listar_reservas(user_id)
             elif escolha == "2":
-                self.alterar_reserva()
+                self.alterar_reserva(user_id)
             elif escolha == "3":
-                self.cancelar_reserva()
+                self.cancelar_reserva(user_id)
             elif escolha == "4":
                     break
             else:
