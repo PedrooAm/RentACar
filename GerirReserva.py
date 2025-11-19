@@ -20,13 +20,14 @@ class GerirReservas:
                 SELECT reservas.id, reservas.user_id, reservas.carro_id, carros.marca, carros.modelo, reservas.data_inicio, reservas.data_fim, reservas.preco_total, reservas.estado
                 FROM reservas 
                 JOIN carros ON reservas.carro_id = carros.id
-                WHERE reservas.user_id = ?
+                WHERE reservas.user_id = ? AND reservas.estado != 'cancelada'
             """, (user_id,))
         else:
             cursor.execute("""
                 SELECT reservas.id, reservas.user_id, reservas.carro_id, carros.marca, carros.modelo, reservas.data_inicio, reservas.data_fim, reservas.preco_total, reservas.estado
                 FROM reservas 
                 JOIN carros ON reservas.carro_id = carros.id
+                WHERE reservas.estado != 'cancelada'
             """)
 
         reservas = cursor.fetchall()
