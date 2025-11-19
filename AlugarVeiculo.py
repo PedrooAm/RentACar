@@ -23,7 +23,7 @@ class Alugar:
         input("Clique ENTER para continuar\n")
         system('cls')
         carros = Carros()
-        carros.executar()
+        carros.Listar()
         input("\nPressione ENTER para voltar ao menu de Alugar...")
 
     def voltar_ao_main(self):
