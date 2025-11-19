@@ -2,6 +2,7 @@
 import sys
 from os import system
 from AlugarVeiculo import Alugar
+from GerirReserva import GerirReservas
 from User.CriarConta import Conta
 from User.LogIn import  Login
 
@@ -51,12 +52,25 @@ def Log_in():
     
 
 def Alugar_Veiculo():
-    print("\nEscolheu a opção: Iniciar Sessão") 
+    print("\nEscolheu a opção: Alugar Veiculo") 
     input("Pressione ENTER para continuar...")
     system('cls')
     Alug = Alugar()
     Alug.menu()
-     
+
+def Gerir_Reserva():
+    print("\nEscolheu a opção: Gerir Reserva")
+    input("Pressione ENTER para continuar...")
+    system('cls') 
+    Gerir= GerirReservas()
+    Gerir.menu(user_id=session_user.get("id"))
+    
+def Logout():
+    global session_user
+    session_user = None
+    print("Sessão terminada. Voltando ao menu principal...")
+    input("Pressione ENTER para continuar...")
+    system('cls')
 
 def Fechar():
     system('cls')  
@@ -65,19 +79,24 @@ def Fechar():
 
 
 def main():
+    global session_user
     while True:
-         
-        menu_items = {
-            "1": ("Criar Conta", CriarConta),
-            "2": ("Iniciar Sessão", Log_in),
-        }
-
-        
+        # Menu diferente conforme sessão
         if session_user and isinstance(session_user, dict):
-            menu_items["3"] = ("Alugar Veículo", Alugar_Veiculo)
-
-        
-        menu_items["4"] = ("Fechar Programa", Fechar)
+            # Menu para utilizador logado
+            menu_items = {
+                "1": ("Alugar Veículo", Alugar_Veiculo),
+                "2": ("Gerir Reservas", Gerir_Reserva),
+                "3": ("Logout / Voltar", Logout),
+                "4": ("Fechar Programa", Fechar)
+            }
+        else:
+            # Menu para utilizador não logado
+            menu_items = {
+                "1": ("Criar Conta", CriarConta),
+                "2": ("Iniciar Sessão", Log_in),
+                "3": ("Fechar Programa", Fechar)
+            }
 
         display_menu(menu_items)
         selection = input("Por favor, escolha uma opção: ").strip()
