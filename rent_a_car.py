@@ -63,7 +63,7 @@ def Gerir_Reservas():
     input("Pressione ENTER para continuar...")
     system('cls')
     Gerir = GerirReservas()
-    Gerir.menu()
+    Gerir.menu(user_id=session_user.get("id"))
      
 
 def Fechar():
@@ -83,6 +83,7 @@ def main():
         
         if session_user and isinstance(session_user, dict):
             menu_items["3"] = ("Alugar Veículo", Alugar_Veiculo)
+            
             if session_user.get("is_admin"):
                 menu_items["4"] = ("Gerir Reservas (Admin)", Gerir_Reservas)
                 menu_items["5"] = ("Fechar Programa", Fechar)

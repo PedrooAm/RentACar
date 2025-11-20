@@ -133,6 +133,19 @@ class GerirReservas:
         print("Reserva cancelada!")
 
     def menu(self, user_id=None):
+
+        conn = self.conectar()
+        cursor = conn.cursor()
+        cursor.execute("SELECT is_admin FROM users WHERE id=?", (user_id,))
+        result = cursor.fetchone()
+        conn.close()
+
+        is_admin = result[0]
+        if not is_admin:
+            print("Acesso negado! Apenas administradores podem gerir reservas.")
+            return
+
+
         while True:
             print("\n--- GERIR RESERVAS ---")
             print("1. Ver reservas")
@@ -142,11 +155,11 @@ class GerirReservas:
             escolha = input("Escolha uma opção: ")
 
             if escolha == "1":
-                self.listar_reservas(user_id)
+                self.listar_reservas(None)
             elif escolha == "2":
-                self.alterar_reserva(user_id)
+                self.alterar_reserva(None)
             elif escolha == "3":
-                self.cancelar_reserva(user_id)
+                self.cancelar_reserva(None)
             elif escolha == "4":
                     break
             else:
