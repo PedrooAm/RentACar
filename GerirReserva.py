@@ -119,8 +119,8 @@ class GerirReservas:
         else:
             print("Reserva alterada com sucesso! Sem diferença de preço.")
         
-    def cancelar_reserva(self):
-        self.listar_reservas()
+    def cancelar_reserva(self, user_id):
+        self.listar_reservas(user_id)
         reserva_id = input("ID da reserva a cancelar: ")
 
         conn = self.conectar()

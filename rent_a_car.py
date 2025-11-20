@@ -63,7 +63,7 @@ def Gerir_Reservas():
     input("Pressione ENTER para continuar...")
     system('cls')
     Gerir = GerirReservas()
-    Gerir.menu()
+    Gerir.menu(user_id=session_user.get("id"))
      
 
 def Fechar():
