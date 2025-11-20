@@ -55,7 +55,11 @@ class GerirReservas:
 
     def alterar_reserva(self, user_id=None):
         self.listar_reservas(user_id)
-        reserva_id = input("ID da reserva a alterar: ")
+        reserva_id = input("ID da reserva a alterar ou 0 para cancelar alteração: "). strip()
+
+        if reserva_id == "0" or reserva_id == "":
+            print("A voltar ao menu de reservas...")
+            return
 
         nova_data_inicio = input("Nova data de início (YYYY-MM-DD): ")
         nova_data_fim = input("Nova data de fim (YYYY-MM-DD): ")
@@ -119,9 +123,13 @@ class GerirReservas:
         else:
             print("Reserva alterada com sucesso! Sem diferença de preço.")
         
-    def cancelar_reserva(self, user_id):
+    def cancelar_reserva(self, user_id=None):
         self.listar_reservas(user_id)
-        reserva_id = input("ID da reserva a cancelar: ")
+        reserva_id = input("ID da reserva a cancelar ou 0 para cancelar a cancelação da reserva: ")
+
+        if reserva_id == "0" or reserva_id == "":
+            print("A voltar ao menu de reservas...")
+            return
 
         conn = self.conectar()
         cursor = conn.cursor()
