@@ -4,6 +4,7 @@ from os import system
 from AlugarVeiculo import Alugar
 from User.CriarConta import Conta
 from User.LogIn import  Login
+from GerirReserva import GerirReservas
 
 login_system = Login()
 session_user = None
@@ -51,11 +52,18 @@ def Log_in():
     
 
 def Alugar_Veiculo():
-    print("\nEscolheu a opção: Iniciar Sessão") 
+    print("\nEscolheu a opção: Alugar Veículo") 
     input("Pressione ENTER para continuar...")
     system('cls')
     Alug = Alugar()
     Alug.menu()
+
+def Gerir_Reservas():
+    print("\nEscolheu a opção: Gerir Reservas") 
+    input("Pressione ENTER para continuar...")
+    system('cls')
+    Gerir = GerirReservas()
+    Gerir.menu(user_id=session_user.get("id"))
      
 
 def Fechar():
@@ -75,9 +83,15 @@ def main():
         
         if session_user and isinstance(session_user, dict):
             menu_items["3"] = ("Alugar Veículo", Alugar_Veiculo)
+            
+            if session_user.get("is_admin"):
+                menu_items["4"] = ("Gerir Reservas (Admin)", Gerir_Reservas)
+                menu_items["5"] = ("Fechar Programa", Fechar)
+            else:
+                menu_items["4"] = ("Fechar Programa", Fechar)
 
-        
-        menu_items["4"] = ("Fechar Programa", Fechar)
+        else:
+            menu_items["3"] = ("Fechar Programa", Fechar)
 
         display_menu(menu_items)
         selection = input("Por favor, escolha uma opção: ").strip()

@@ -14,7 +14,7 @@ class AuthBase:
         conn = self.conectar()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, nome, email, password FROM users WHERE nome=? OR email=?",
+            "SELECT id, nome, email, password, is_admin FROM users WHERE nome=? OR email=?",
             (nome_ou_email, nome_ou_email)
         )
         resultado = cursor.fetchone()
@@ -66,10 +66,15 @@ class Login(AuthBase):
             print("Utilizador não encontrado!")
             return False
 
-        uid, nome, email, password_db = utilizador
+        uid, nome, email, password_db, is_admin = utilizador
 
         if password_input == password_db:
-            self.session_user = {"id": uid, "nome": nome, "email": email}
+            self.session_user = {
+                "id": uid,
+                "nome": nome,
+                "email": email,
+                "is_admin": bool(is_admin)
+            }
             print(f"Bem-vindo(a), {nome}!")
             return True
         else:
