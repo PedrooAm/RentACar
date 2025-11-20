@@ -5,6 +5,9 @@ from AlugarVeiculo import Alugar
 from User.CriarConta import Conta
 from User.LogIn import  Login
 from GerirReserva import GerirReservas
+from adicionar_carros import AdicionarCarros
+
+
 
 login_system = Login()
 session_user = None
@@ -64,8 +67,23 @@ def Gerir_Reservas():
     system('cls')
     Gerir = GerirReservas()
     Gerir.menu(user_id=session_user.get("id"))
-     
 
+
+def Gerir_Carros():
+    print("\nEscolheu a opção: Gerir Carros (Admin)")
+    input("Pressione ENTER para continuar...")
+    system('cls')
+    svc = AdicionarCarros("Bd/RentACar.db")
+    try:
+        svc.menu(user_id=session_user.get("id"))
+    finally:
+        try:
+            svc.close()
+        except Exception:
+            pass
+
+
+     
 def Fechar():
     system('cls')  
     print("\nObrigado por usar o Rent A Car! Até logo ")
@@ -86,7 +104,8 @@ def main():
             
             if session_user.get("is_admin"):
                 menu_items["4"] = ("Gerir Reservas (Admin)", Gerir_Reservas)
-                menu_items["5"] = ("Fechar Programa", Fechar)
+                menu_items["5"] = ("Gerir Carros (Admin)", Gerir_Carros)
+                menu_items["6"] = ("Fechar Programa", Fechar)
             else:
                 menu_items["4"] = ("Fechar Programa", Fechar)
 
