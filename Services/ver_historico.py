@@ -4,24 +4,17 @@ from typing import Optional
 
 
 class VerHistorico:
-    """
-    Classe responsável por exibir o histórico de alugueres de um cliente.
-    Pode ser importada e utilizada na main com:
-        from ver_historico import VerHistorico
-        VerHistorico().menu(user_id=1)
-    """
+
 
     def __init__(self, db_path: str = "Bd/RentACar.db") -> None:
         self.db_path = db_path
 
-    # -------------------------
-    # Infra
-    # -------------------------
+
     def conectar(self):
         return sqlite3.connect(self.db_path)
 
     def _is_cliente(self, *, user_id: Optional[int] = None, username: Optional[str] = None) -> bool:
-        """Verifica se o utilizador é cliente (não administrador)."""
+       
         conn = self.conectar()
         cur = conn.cursor()
         if user_id is not None:
@@ -33,7 +26,7 @@ class VerHistorico:
         return bool(row and row[0] == 0)
 
     def _resolve_cliente_id(self, *, user_id: Optional[int] = None, username: Optional[str] = None) -> int:
-        """Confirma o ID do cliente e valida se não é admin."""
+      
         conn = self.conectar()
         cur = conn.cursor()
         if user_id is not None:

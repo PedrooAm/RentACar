@@ -52,6 +52,7 @@ class GerirReservas:
     Estado: {r[8]}
             """)
         print("--------------------------\n")
+        input("Pressione ENTER para continuar...")
 
     def alterar_reserva(self, user_id=None):
         self.listar_reservas(user_id)
@@ -64,7 +65,7 @@ class GerirReservas:
         nova_data_inicio = input("Nova data de início (YYYY-MM-DD): ")
         nova_data_fim = input("Nova data de fim (YYYY-MM-DD): ")
 
-        # calcular número de dias
+       
         try:
             d1 = datetime.strptime(nova_data_inicio, "%Y-%m-%d")
             d2 = datetime.strptime(nova_data_fim, "%Y-%m-%d")
@@ -79,7 +80,7 @@ class GerirReservas:
         conn = self.conectar()
         cursor = conn.cursor()
 
-        # obter carro_id e preço antigo da reserva
+       
         cursor.execute("SELECT carro_id, preco_total FROM reservas WHERE id=?", (reserva_id,))
         resultado = cursor.fetchone()
         if not resultado:
@@ -89,7 +90,7 @@ class GerirReservas:
 
         carro_id, preco_antigo = resultado
 
-        # obter preço do carro
+       
         cursor.execute("SELECT preco_dia FROM carros WHERE id=?", (carro_id,))
         resultado_carro = cursor.fetchone()
         if not resultado_carro:

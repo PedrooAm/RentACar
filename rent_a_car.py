@@ -1,19 +1,14 @@
-
 import sys
 from os import system
 from AlugarVeiculo import Alugar
 from User.CriarConta import Conta
 from User.LogIn import  Login
-from GerirReserva import GerirReservas
-from adicionar_carros import AdicionarCarros
-from ver_historico import VerHistorico
-
-
-
+from Services.GerirReserva import GerirReservas
+from Services.adicionar_carros import AdicionarCarros
+from Services.ver_historico import VerHistorico
 
 login_system = Login()
 session_user = None
-
 
 def display_menu(menu):
     system('cls')
@@ -30,46 +25,49 @@ def display_menu(menu):
         print(f"{key} - {descricao}")
     print()
 
-
 def CriarConta():
-    print("\nEscolheu a opção: Criar Conta") 
+    print("\nEscolheu a opção: Criar Conta")
     input("Pressione ENTER para continuar....")
     system('cls')
     criar = Conta()
     criar.criar_conta()
 
 def Log_in():
-    global session_user , login_system
-    print("\nEscolheu a opção: Iniciar Sessão") 
+    global session_user, login_system
+    print("\nEscolheu a opção: Iniciar Sessão")
     input("Pressione ENTER para continuar...")
     system('cls')
-    log = Login() 
-    session_user = log.autenticar()
-    if session_user: 
+    log = Login()
+    session = log.autenticar()
+    if session:
         session_user = log.session_user
         login_system = log
-        print("Sessão iniciada com sucesso!, para voltar ao menu principal... ")
+        print("Sessão iniciada com sucesso!")
     else:
-        print("Falha ao iniciar sessão. A voltar ao menu principal... ")    
+        print("Falha ao iniciar sessão.")
     input("Pressione ENTER...")
     system('cls')
-   
-    
+
+def Log_out():
+    global session_user
+    session_user = None
+    print("\nSessão terminada.")
+    input("Pressione ENTER...")
+    system('cls')
 
 def Alugar_Veiculo():
-    print("\nEscolheu a opção: Alugar Veículo") 
+    print("\nEscolheu a opção: Alugar Veículo")
     input("Pressione ENTER para continuar...")
     system('cls')
     Alug = Alugar()
     Alug.menu()
 
 def Gerir_Reservas():
-    print("\nEscolheu a opção: Gerir Reservas") 
+    print("\nEscolheu a opção: Gerir Reservas")
     input("Pressione ENTER para continuar...")
     system('cls')
     Gerir = GerirReservas()
     Gerir.menu(user_id=session_user.get("id"))
-
 
 def Gerir_Carros():
     print("\nEscolheu a opção: Gerir Carros (Admin)")
@@ -91,49 +89,49 @@ def Ver_Historico():
     hist = VerHistorico("Bd/RentACar.db")
     hist.menu(user_id=session_user.get("id"))
 
-
-
-     
 def Fechar():
-    system('cls')  
+    system('cls')
     print("\nObrigado por usar o Rent A Car! Até logo ")
     sys.exit()
 
-
 def main():
     while True:
-         
-        menu_items = {
-            "1": ("Criar Conta", CriarConta),
-            "2": ("Iniciar Sessão", Log_in),
-        }
-
-        
-        if session_user and isinstance(session_user, dict):
-            menu_items["3"] = ("Alugar Veículo", Alugar_Veiculo)
-            
-            if session_user.get("is_admin"):
-                menu_items["4"] = ("Gerir Reservas (Admin)", Gerir_Reservas)
-                menu_items["5"] = ("Gerir Carros (Admin)", Gerir_Carros)
-                menu_items["6"] = ("Fechar Programa", Fechar)
-            else:
-                menu_items["4"] = ("Ver Histórico de Alugueres", Ver_Historico)
-                menu_items["5"] = ("Fechar Programa", Fechar)
-
+        # monta o menu conforme o estado da sessão
+        if not session_user:
+            menu_items = {
+                "1": ("Criar Conta", CriarConta),
+                "2": ("Iniciar Sessão", Log_in),
+                "3": ("Fechar Programa", Fechar),
+            }
         else:
-            menu_items["3"] = ("Fechar Programa", Fechar)
+            # utilizador autenticado
+            is_admin = bool(session_user.get("is_admin"))
+            if is_admin:
+                menu_items = {
+                    "1": ("Gerir Reservas (Admin)", Gerir_Reservas),
+                    "2": ("Gerir Carros (Admin)", Gerir_Carros),
+                    "3": ("Ver Histórico de Alugueres", Ver_Historico),
+                    "4": ("Terminar Sessão", Log_out),
+                    "5": ("Fechar Programa", Fechar),
+                }
+            else:
+                menu_items = {
+                    "1": ("Alugar Veículo", Alugar_Veiculo),
+                    "2": ("Ver Histórico de Alugueres", Ver_Historico),
+                    "3": ("Terminar Sessão", Log_out),
+                    "4": ("Fechar Programa", Fechar),
+                }
 
         display_menu(menu_items)
         selection = input("Por favor, escolha uma opção: ").strip()
         item = menu_items.get(selection)
         if item:
-            descricao, func = item
+            _, func = item
             func()
         else:
             print("\nOpção inválida. Tente novamente.\n")
             input("Pressione ENTER para continuar...")
             system('cls')
-
 
 if __name__ == "__main__":
     main()

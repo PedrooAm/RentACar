@@ -1,7 +1,7 @@
 import sys
 from os import system
 import sqlite3
-from Carros import Carros 
+from Services.Carros import Carros 
 
 class Alugar:
     def __init__(self):

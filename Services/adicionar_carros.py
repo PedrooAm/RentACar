@@ -1,6 +1,7 @@
 import sqlite3
 from typing import Optional
-
+import sys
+from os import system
 
 class AdicionarCarros:
     def __init__(self, db_path: str = "Bd/RentACar.db") -> None:
@@ -84,7 +85,7 @@ class AdicionarCarros:
         by_username: Optional[str] = None,
         car_id: int,
     ) -> None:
-        """Remove um carro pelo ID (somente admins podem)."""
+        
         admin_id = self._resolve_admin_id(user_id=by_user_id, username=by_username)
         conn = self.conectar()
         cur = conn.cursor()
@@ -102,7 +103,7 @@ class AdicionarCarros:
 
   
     def menu(self, user_id: Optional[int] = None, username: Optional[str] = None) -> None:
-        # Bloqueia se não for admin
+        
         if not self._is_admin(user_id=user_id, username=username):
             print("Acesso negado! Apenas administradores podem gerir carros.")
             return
@@ -114,6 +115,7 @@ class AdicionarCarros:
             print("3. Remover carro")
             print("4. Voltar")
             escolha = input("Escolha uma opção: ").strip()
+            system('cls')
 
             if escolha == "1":
                 rows = self.listar_carros()
@@ -124,41 +126,64 @@ class AdicionarCarros:
                     for c in rows:
                         print(f"ID: {c[0]} | {c[1]} {c[2]} | Mat: {c[3]} | Admin: {c[4]} | Preço/dia: {c[5]}€ | Estado: {c[6]}")
                     print("-----------------------")
+                    input("Pressione ENTER para voltar ao menu...")
+                    system('cls')
 
             elif escolha == "2":
-                marca = input("Marca: ").strip()
-                modelo = input("Modelo: ").strip()
-                matricula = input("Matrícula: ").strip().upper()
-                try:
-                    preco_dia = float(input("Preço por dia (€): ").strip().replace(",", "."))
-                except ValueError:
-                    print("Preço inválido!")
-                    continue
-                estado = input("Estado [Disponível/Em manutenção/...]: ").strip() or "Disponível"
-                try:
-                    new_id = self.add_car(
-                        by_user_id=user_id,
-                        by_username=username,
-                        marca=marca,
-                        modelo=modelo,
-                        matricula=matricula,
-                        preco_dia=preco_dia,
-                        estado=estado,
-                    )
-                    print(f"Carro adicionado com sucesso! ID: {new_id}")
-                except PermissionError as e:
-                    print(e)
-                except sqlite3.IntegrityError as e:
-                    print(e)
-                except Exception as e:
-                    print("Erro inesperado:", e)
+             
+                while True:
+                    marca = input("Marca: ").strip()
+                    modelo = input("Modelo: ").strip()
+                    matricula = input("Matrícula: ").strip().upper()
+                    try:
+                        preco_dia = float(input("Preço por dia (€): ").strip().replace(",", "."))
+                    except ValueError:
+                        print("Preço inválido!")
+                        input("Pressione ENTER para continuar...")
+                        system('cls')
+                        continue
+                    estado = input("Estado [Disponível/Em manutenção/...]: ").strip() or "Disponível"
+                    try:
+                        new_id = self.add_car(
+                            by_user_id=user_id,
+                            by_username=username,
+                            marca=marca,
+                            modelo=modelo,
+                            matricula=matricula,
+                            preco_dia=preco_dia,
+                            estado=estado,
+                        )
+                        print(f"Carro adicionado com sucesso! ID: {new_id}")
+                    except PermissionError as e:
+                        print(e)
+                    except sqlite3.IntegrityError as e:
+                        print(e)
+                    except Exception as e:
+                        print("Erro inesperado:", e)
+
+                    escolha_add = input("Pressione '+' para adicionar outro carro ou ENTER para voltar ao menu: ").strip()
+                    if escolha_add == "+":
+                        system('cls')
+                        continue
+                    else:
+                        system('cls')
+                        break
 
             elif escolha == "3":
+               
+                entrada = input("ID do carro a remover (ou 'c' para cancelar): ").strip().lower()
+                if entrada == 'c':
+                    system('cls')
+                    continue
+
                 try:
-                    car_id = int(input("ID do carro a remover: ").strip())
+                    car_id = int(entrada)
                 except ValueError:
                     print("ID inválido!")
+                    input("Pressione ENTER para continuar...")
+                    system('cls')
                     continue
+
                 try:
                     self.delete_car(by_user_id=user_id, by_username=username, car_id=car_id)
                 except ValueError as e:
@@ -167,6 +192,9 @@ class AdicionarCarros:
                     print(e)
                 except Exception as e:
                     print("Erro inesperado:", e)
+
+                input("Pressione ENTER para continuar...")
+                system('cls')
 
             elif escolha == "4":
                 break
