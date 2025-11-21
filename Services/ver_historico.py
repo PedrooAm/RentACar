@@ -109,6 +109,7 @@ class VerHistorico:
                 carro = self.carro_atual(cliente_id)
                 if not carro:
                     print("\nNão está a utilizar nenhum carro atualmente.")
+                    input("Pressione ENTER para continuar...")
                 else:
                     print("\n--- CARRO ATUAL ---")
                     print(f"Marca/Modelo: {carro[0]} {carro[1]}")

@@ -110,9 +110,8 @@ def main():
                 menu_items = {
                     "1": ("Gerir Reservas (Admin)", Gerir_Reservas),
                     "2": ("Gerir Carros (Admin)", Gerir_Carros),
-                    "3": ("Ver Histórico de Alugueres", Ver_Historico),
-                    "4": ("Terminar Sessão", Log_out),
-                    "5": ("Fechar Programa", Fechar),
+                    "3": ("Terminar Sessão", Log_out),
+                    "4": ("Fechar Programa", Fechar),
                 }
             else:
                 menu_items = {
