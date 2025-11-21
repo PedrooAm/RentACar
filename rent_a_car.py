@@ -59,7 +59,7 @@ def Alugar_Veiculo():
     print("\nEscolheu a opção: Alugar Veículo")
     input("Pressione ENTER para continuar...")
     system('cls')
-    Alug = Alugar()
+    Alug = Alugar(session_user.get("id"))
     Alug.menu()
 
 def Gerir_Reservas():

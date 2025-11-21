@@ -2,12 +2,14 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent / "Bd" / "RentACar.db"
+DB_PATH = Path(__file__).resolve().parent.parent / "Bd" / "RentACar.db"
 
 class Carros:
     def conectar(self):
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
         return sqlite3.connect(str(DB_PATH))
+    
+
 
     def _ensure_columns(self):
         conn = self.conectar()
@@ -45,11 +47,18 @@ class Carros:
         conn.close()
         return carros
 
-    def listar_alugados(self):
+    def listar_alugados(self, user_id):
+      
         self._ensure_columns()
+        if not user_id:
+            return []
+
         conn = self.conectar()
         cursor = conn.cursor()
-        cursor.execute("SELECT marca, modelo, matricula, preco_dia, data_inicio, data_fim FROM carros WHERE estado = 'Alugado'")
+        cursor.execute(
+            "SELECT marca, modelo, matricula, preco_dia, data_inicio, data_fim FROM carros WHERE estado = 'Alugado' AND user_id = ?",
+            (user_id,)
+        )
         carros = cursor.fetchall()
         conn.close()
         return carros
@@ -61,7 +70,7 @@ class Carros:
         except Exception:
             return False
 
-    def marcar_alugado(self, matricula):
+    def marcar_alugado(self, matricula, user_id):
      
         self._ensure_columns()
         conn = self.conectar()
@@ -79,6 +88,7 @@ class Carros:
             return False
 
        
+
         while True:
             data_inicio = input("Insira a data de início (YYYY-MM-DD) ou 0 para cancelar: ").strip()
             if data_inicio == "0" or data_inicio == "":
@@ -107,8 +117,8 @@ class Carros:
 
         try:
             cursor.execute(
-                "UPDATE carros SET estado = 'Alugado', data_inicio = ?, data_fim = ? WHERE matricula = ? AND estado = 'Disponível'",
-                (data_inicio, data_fim, matricula)
+                "UPDATE carros SET estado = 'Alugado', data_inicio = ?, data_fim = ?, user_id = ? WHERE matricula = ? AND estado = 'Disponível'",
+                (data_inicio, data_fim, user_id, matricula)
             )
             conn.commit()
             changed = cursor.rowcount

@@ -4,12 +4,13 @@ import sqlite3
 from Services.Carros import Carros 
 
 class Alugar:
-    def __init__(self):
+    def __init__(self,user_id):
+        self.user_id = user_id
         self.menu_items = {
             1: ("Listar carros disponiveis", self.listar_carros_disponiveis),
             2: ("Consultar Aluguel",self.consultar_aluguel),          
             3: ("Voltar ao menu principal", self.voltar_ao_main),
-            4: ("Encerrar", self.fechar)
+           
         }
 
     def conectar(self):
@@ -53,7 +54,7 @@ class Alugar:
         marca, modelo, matricula, preco_dia = lista[escolha - 1][:4]
         print(f"\nSelecionou: {marca} {modelo} ({matricula}) — {preco_dia} EUR/dia")
         
-        sucesso = carros.marcar_alugado(matricula)
+        sucesso = carros.marcar_alugado(matricula, self.user_id) 
         if sucesso:
             print("Veículo alugado com sucesso.")
         else:
@@ -67,7 +68,7 @@ class Alugar:
         print("Veículos atualmente alugados:\n")
         conn = self.conectar()
         cursor = conn.cursor()
-        cursor.execute("SELECT marca, modelo, matricula, preco_dia , data_inicio , data_fim FROM carros WHERE estado = 'Alugado'")
+        cursor.execute("SELECT marca, modelo, matricula, preco_dia , data_inicio , data_fim FROM carros WHERE estado = 'Alugado' AND user_id = ?", (self.user_id,))
         alug = cursor.fetchall()
 
         if not alug:
@@ -121,7 +122,7 @@ class Alugar:
     
 
     def voltar_ao_main(self):
-        print("Escolheu a opção 2")
+        print("Escolheu a opção : Voltar ao menu principal")
         input("Clique ENTER para continuar\n")
         system('cls')
         return
@@ -149,10 +150,7 @@ class Alugar:
                 return
             func()
 
-    def fechar(self):
-        system('cls')
-        print("Adeus!")
-        sys.exit()
+ 
 
 
 
