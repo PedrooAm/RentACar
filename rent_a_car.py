@@ -6,6 +6,8 @@ from User.CriarConta import Conta
 from User.LogIn import  Login
 from GerirReserva import GerirReservas
 from adicionar_carros import AdicionarCarros
+from ver_historico import VerHistorico
+
 
 
 
@@ -82,6 +84,14 @@ def Gerir_Carros():
         except Exception:
             pass
 
+def Ver_Historico():
+    print("\nEscolheu a opção: Ver Histórico de Alugueres")
+    input("Pressione ENTER para continuar...")
+    system('cls')
+    hist = VerHistorico("Bd/RentACar.db")
+    hist.menu(user_id=session_user.get("id"))
+
+
 
      
 def Fechar():
@@ -107,7 +117,8 @@ def main():
                 menu_items["5"] = ("Gerir Carros (Admin)", Gerir_Carros)
                 menu_items["6"] = ("Fechar Programa", Fechar)
             else:
-                menu_items["4"] = ("Fechar Programa", Fechar)
+                menu_items["4"] = ("Ver Histórico de Alugueres", Ver_Historico)
+                menu_items["5"] = ("Fechar Programa", Fechar)
 
         else:
             menu_items["3"] = ("Fechar Programa", Fechar)
