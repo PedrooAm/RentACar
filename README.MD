@@ -36,6 +36,7 @@ Breve descrição de cada item
 - **User/CriarConta.py** — Funções para criação de contas (validação e inserção na BD).
 - **User/LogIn.py** — Validação de credenciais e gestão de sessão.
 - **GerirReserva.py** — Operações relacionadas com reservas (opcional/expansível).
+- **ver_historico.py** -Mostra o carro que o cliente está a usar neste momento e os antigos.
 
 
 
