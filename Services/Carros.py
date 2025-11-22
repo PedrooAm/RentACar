@@ -8,23 +8,51 @@ class Carros:
     def conectar(self):
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
         return sqlite3.connect(str(DB_PATH))
-    
 
-
+    # =============================================
+    #   GARANTE QUE AS COLUNAS EXISTEM
+    # =============================================
     def _ensure_columns(self):
         conn = self.conectar()
         cursor = conn.cursor()
         try:
             cursor.execute("PRAGMA table_info(carros)")
             cols = [row[1] for row in cursor.fetchall()]
+
             if "data_inicio" not in cols:
                 cursor.execute("ALTER TABLE carros ADD COLUMN data_inicio TEXT")
             if "data_fim" not in cols:
                 cursor.execute("ALTER TABLE carros ADD COLUMN data_fim TEXT")
+            if "user_id" not in cols:
+                cursor.execute("ALTER TABLE carros ADD COLUMN user_id INTEGER")
+
             conn.commit()
         finally:
             conn.close()
 
+    # =============================================
+    #   GARANTE QUE TABELA RESERVAS EXISTE
+    # =============================================
+    def _ensure_reservas(self):
+        conn = self.conectar()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS reservas(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                carro_id INTEGER,
+                data_inicio TEXT,
+                data_fim TEXT,
+                preco_total REAL,
+                estado TEXT
+            )
+        """)
+        conn.commit()
+        conn.close()
+
+    # =============================================
+    #   LISTAR CARROS
+    # =============================================
     def Listar(self):
         self._ensure_columns()
         conn = self.conectar()
@@ -48,21 +76,24 @@ class Carros:
         return carros
 
     def listar_alugados(self, user_id):
-      
         self._ensure_columns()
         if not user_id:
             return []
 
         conn = self.conectar()
         cursor = conn.cursor()
-        cursor.execute(
-            "SELECT marca, modelo, matricula, preco_dia, data_inicio, data_fim FROM carros WHERE estado = 'Alugado' AND user_id = ?",
-            (user_id,)
-        )
+        cursor.execute("""
+            SELECT marca, modelo, matricula, preco_dia, data_inicio, data_fim 
+            FROM carros 
+            WHERE estado = 'Alugado' AND user_id = ?
+        """, (user_id,))
         carros = cursor.fetchall()
         conn.close()
         return carros
 
+    # =============================================
+    #   VALIDAR DATA
+    # =============================================
     def _valid_date(self, date_str):
         try:
             datetime.strptime(date_str, "%Y-%m-%d")
@@ -70,45 +101,61 @@ class Carros:
         except Exception:
             return False
 
+    # =============================================
+    #   MARCAR CARRO COMO ALUGADO (CORRIGIDO)
+    # =============================================
     def marcar_alugado(self, matricula, user_id):
-     
+
         self._ensure_columns()
+        self._ensure_reservas()
+
         conn = self.conectar()
         cursor = conn.cursor()
-        cursor.execute("SELECT preco_dia, estado FROM carros WHERE matricula = ?", (matricula,))
+
+        # AGORA SELECIONA O ID TAMBÉM !!!
+        cursor.execute("SELECT id, preco_dia, estado FROM carros WHERE matricula = ?", (matricula,))
         row = cursor.fetchone()
+
         if not row:
             conn.close()
             print("Matrícula não encontrada.")
             return False
-        preco_dia, estado = row
+
+        carro_id, preco_dia, estado = row
+
         if estado != "Disponível":
             conn.close()
             print("Carro não está disponível para aluguer.")
             return False
 
-       
-
+        # PEDIR DATAS
         while True:
             data_inicio = input("Insira a data de início (YYYY-MM-DD) ou 0 para cancelar: ").strip()
             if data_inicio == "0" or data_inicio == "":
                 print("Aluguer cancelado.")
                 conn.close()
                 return False
+
             data_fim = input("Insira a data de fim (YYYY-MM-DD): ").strip()
+
             if not (self._valid_date(data_inicio) and self._valid_date(data_fim)):
-                print("Formato de data inválido. Use YYYY-MM-DD. Tente novamente.")
+                print("Formato de data inválido. Use YYYY-MM-DD.")
                 continue
+
             di = datetime.strptime(data_inicio, "%Y-%m-%d")
             df = datetime.strptime(data_fim, "%Y-%m-%d")
+
             if df < di:
-                print("Data fim deve ser igual ou posterior à data início. Tente novamente.")
+                print("Data fim deve ser igual ou posterior à data início.")
                 continue
+
             break
 
         dias = (df - di).days + 1
-        total = preco_dia * dias
+        total = float(preco_dia) * dias
+
         print(f"Dias: {dias} | Total: {total:.2f} EUR")
+
         confirmar = input("Confirma aluguer com estas datas? (s/n): ").strip().lower()
         if confirmar != "s":
             print("Aluguer cancelado.")
@@ -116,31 +163,46 @@ class Carros:
             return False
 
         try:
-            cursor.execute(
-                "UPDATE carros SET estado = 'Alugado', data_inicio = ?, data_fim = ?, user_id = ? WHERE matricula = ? AND estado = 'Disponível'",
-                (data_inicio, data_fim, user_id, matricula)
-            )
+            # MARCAR CARRO COMO ALUGADO
+            cursor.execute("""
+                UPDATE carros
+                SET estado = 'Alugado', data_inicio = ?, data_fim = ?, user_id = ?
+                WHERE matricula = ? AND estado = 'Disponível'
+            """, (data_inicio, data_fim, user_id, matricula))
+
+            # REGISTAR RESERVA
+            cursor.execute("""
+                INSERT INTO reservas (user_id, carro_id, data_inicio, data_fim, preco_total, estado)
+                VALUES (?, ?, ?, ?, ?, 'confirmada')
+            """, (user_id, carro_id, data_inicio, data_fim, total))
+
             conn.commit()
-            changed = cursor.rowcount
-            return changed > 0
+            print("Reserva criada com sucesso.")
+            return True
+
         except sqlite3.OperationalError as e:
             print("Erro na BD:", e)
+            conn.rollback()
             return False
+
         finally:
             conn.close()
 
+    # =============================================
+    #   CANCELAR ALUGUEL
+    # =============================================
     def cancelar_aluguel(self, matricula):
         self._ensure_columns()
         conn = self.conectar()
         cursor = conn.cursor()
-        cursor.execute(
-            "UPDATE carros SET estado = 'Disponível', data_inicio = NULL, data_fim = NULL WHERE matricula = ? AND estado = 'Alugado'",
-            (matricula,)
-        )
+
+        cursor.execute("""
+            UPDATE carros 
+            SET estado = 'Disponível', data_inicio = NULL, data_fim = NULL, user_id = NULL
+            WHERE matricula = ? AND estado = 'Alugado'
+        """, (matricula,))
+
         conn.commit()
         changed = cursor.rowcount
         conn.close()
         return changed > 0
-
-
-
