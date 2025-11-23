@@ -6,19 +6,47 @@ from os import system
 
 class VerHistorico:
 
+    """Consulta de histórico e estado atual de alugueres de um cliente."""
+
+
     def __init__(self, db_path: str = "Bd/RentACar.db") -> None:
+
+        """Inicializa o gestor de histórico.
+
+        Args:
+            db_path (str): Caminho da base de dados.
+        """
+
         self.db_path = db_path
 
     # -------------------------
     # Conexão com a base de dados
     # -------------------------
     def conectar(self):
+
+        """Abre ligação com a base de dados.
+
+        Returns:
+            sqlite3.Connection: Conexão ativa.
+        """
+
         return sqlite3.connect(self.db_path)
 
     # -------------------------
     # Verifica se o user é cliente
     # -------------------------
     def _is_cliente(self, *, user_id: Optional[int] = None, username: Optional[str] = None) -> bool:
+
+        """Verifica se o utilizador é cliente (não admin).
+
+        Args:
+            user_id (int, optional): ID do utilizador.
+            username (str, optional): Nome do utilizador.
+
+        Returns:
+            bool: True se for cliente, False caso contrário.
+        """
+
         conn = self.conectar()
         cur = conn.cursor()
 
@@ -35,6 +63,20 @@ class VerHistorico:
     # Obter ID do cliente
     # -------------------------
     def _resolve_cliente_id(self, *, user_id: Optional[int] = None, username: Optional[str] = None) -> int:
+
+        """Obtém o ID do cliente e verifica permissões.
+
+        Args:
+            user_id (int, optional): ID do utilizador.
+            username (str, optional): Nome do utilizador.
+
+        Raises:
+            PermissionError: Se o utilizador não existir ou for administrador.
+
+        Returns:
+            int: ID do utilizador cliente.
+        """
+
         conn = self.conectar()
         cur = conn.cursor()
 
@@ -59,6 +101,16 @@ class VerHistorico:
     # Carro atualmente alugado
     # -------------------------
     def carro_atual(self, user_id: int):
+
+        """Obtém o carro que o cliente está a utilizar atualmente.
+
+        Args:
+            user_id (int): ID do cliente.
+
+        Returns:
+            tuple | None: Dados do carro atual ou None se não houver.
+        """
+
         hoje = datetime.now().date()
         conn = self.conectar()
         cur = conn.cursor()
@@ -81,6 +133,16 @@ class VerHistorico:
     # Histórico de carros (reservas passadas)
     # -------------------------
     def historico_carros(self, user_id: int):
+
+        """Lista reservas concluídas no passado.
+
+        Args:
+            user_id (int): ID do cliente.
+
+        Returns:
+            list: Lista de carros utilizados anteriormente.
+        """
+
         hoje = datetime.now().date()
         conn = self.conectar()
         cur = conn.cursor()
@@ -101,6 +163,16 @@ class VerHistorico:
     # Próxima reserva futura
     # -------------------------
     def proxima_reserva(self, user_id: int):
+
+        """Obtém a próxima reserva futura do cliente.
+
+        Args:
+            user_id (int): ID do cliente.
+
+        Returns:
+            tuple | None: Dados da próxima reserva ou None.
+        """
+
         hoje = datetime.now().date()
         conn = self.conectar()
         cur = conn.cursor()
@@ -122,6 +194,14 @@ class VerHistorico:
     # Menu interativo completo
     # -------------------------
     def menu(self, user_id: Optional[int] = None, username: Optional[str] = None):
+
+        """Menu interativo para clientes visualizarem histórico e reservas.
+
+        Args:
+            user_id (int, optional): ID do utilizador cliente.
+            username (str, optional): Nome do utilizador cliente.
+        """
+
         if not self._is_cliente(user_id=user_id, username=username):
             print("Acesso negado! Apenas clientes podem ver o histórico.")
             return
