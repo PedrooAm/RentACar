@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rent_a_car &mdash; Documentação RentACar </title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=103ffe9a"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=beaedd51"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Pesquisar" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            RentACar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar docs" aria-label="Pesquisar docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../AlugarVeiculo.html">AlugarVeiculo module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rent_a_car.html">rent_a_car module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">RentACar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Código do módulo</a></li>
+      <li class="breadcrumb-item active">rent_a_car</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fonte de rent_a_car</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Sistema RENT A CAR - Programa Principal</span>
+
+<span class="sd">Este módulo implementa o menu principal e o fluxo de navegação</span>
+<span class="sd">de um sistema Rent-A-Car. Ele tem como funcionalidade</span>
+<span class="sd">como:</span>
+
+<span class="sd">- Criação de conta</span>
+<span class="sd">- Autenticação de utilizadores</span>
+<span class="sd">- Aluguer de veículos</span>
+<span class="sd">- Gestão de reservas (Admin)</span>
+<span class="sd">- Gestão de carros (Admin)</span>
+<span class="sd">- Consulta de histórico de alugueres</span>
+
+<span class="sd">Também executa o controlo da sessão do utilizador, </span>
+<span class="sd">mostrando opções diferentes consoante o tipo de utilizador</span>
+<span class="sd">(normal ou administrador).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">system</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">AlugarVeiculo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Alugar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">User.CriarConta</span><span class="w"> </span><span class="kn">import</span> <span class="n">Conta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">User.LogIn</span><span class="w"> </span><span class="kn">import</span>  <span class="n">Login</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">Services.GerirReserva</span><span class="w"> </span><span class="kn">import</span> <span class="n">GerirReservas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">Services.adicionar_carros</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdicionarCarros</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">Services.ver_historico</span><span class="w"> </span><span class="kn">import</span> <span class="n">VerHistorico</span>
+
+<span class="n">login_system</span> <span class="o">=</span> <span class="n">Login</span><span class="p">()</span>
+<span class="n">session_user</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="display_menu">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.display_menu">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">display_menu</span><span class="p">(</span><span class="n">menu</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apresenta o cabeçalho e as opções do menu atual.</span>
+
+<span class="sd">    Parâmetros</span>
+<span class="sd">    ----------</span>
+<span class="sd">    menu : dict[str, (str, Callable)]</span>
+<span class="sd">        Dicionário onde a chave é o identificador da opção (ex.: &quot;1&quot;)</span>
+<span class="sd">        e o valor é um tuplo (descrição, função a executar).</span>
+
+<span class="sd">    Efeitos colaterais</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    - Limpa o ecrã (system(&#39;cls&#39;)).</span>
+<span class="sd">    - Imprime no stdout o cabeçalho e a lista de opções.</span>
+<span class="sd">    - Mostra, quando existir, o resumo do utilizador autenticado.</span>
+
+<span class="sd">    Notas</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Pressupõe que cada valor do dicionário contém exatamente</span>
+<span class="sd">      (descrição, função). Não valida duplicados.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">==============================&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       MENU RENT A CAR          &quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;==============================</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">session_user</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">session_user</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Utilizador: </span><span class="si">{</span><span class="n">session_user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nome&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | Email: </span><span class="si">{</span><span class="n">session_user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Utilizador: Não autenticado</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">descricao</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">menu</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">descricao</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span></div>
+
+
+
+
+
+<div class="viewcode-block" id="CriarConta">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.CriarConta">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">CriarConta</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fluxo de criação de conta de utilizador.</span>
+
+<span class="sd">    Pré-condições</span>
+<span class="sd">    -------------</span>
+<span class="sd">    - Nenhuma. Pode ser executado sem sessão.</span>
+
+<span class="sd">    Efeitos colaterais</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    - Interação via input() para avançar.</span>
+<span class="sd">    - Limpa o ecrã antes de invocar o fluxo de criação.</span>
+<span class="sd">    - Invoca `Conta().criar_conta()` (módulo User.CriarConta).</span>
+
+<span class="sd">    Exceções</span>
+<span class="sd">    --------</span>
+<span class="sd">    - Propaga exceções lançadas pela camada `Conta`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Escolheu a opção: Criar Conta&quot;</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER para continuar....&quot;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+    <span class="n">criar</span> <span class="o">=</span> <span class="n">Conta</span><span class="p">()</span>
+    <span class="n">criar</span><span class="o">.</span><span class="n">criar_conta</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Log_in">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.Log_in">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Log_in</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Executa o processo de autenticação e atualiza o estado de sessão global.</span>
+
+<span class="sd">    Efeitos colaterais</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    - Modifica as variáveis globais `session_user` e `login_system`.</span>
+<span class="sd">    - Interação via input() e impressão de mensagens de sucesso/erro.</span>
+<span class="sd">    - Limpa o ecrã no início e no fim.</span>
+
+<span class="sd">    Fluxo</span>
+<span class="sd">    -----</span>
+<span class="sd">    1) Cria uma instância de `Login`.</span>
+<span class="sd">    2) Chama `autenticar()`; se sucesso, copia `session_user` da instância.</span>
+<span class="sd">    3) Informa o utilizador e regressa ao menu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">global</span> <span class="n">session_user</span><span class="p">,</span> <span class="n">login_system</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Escolheu a opção: Iniciar Sessão&quot;</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER para continuar...&quot;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">Login</span><span class="p">()</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">autenticar</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">session_user</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">session_user</span>
+        <span class="n">login_system</span> <span class="o">=</span> <span class="n">log</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sessão iniciada com sucesso!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Falha ao iniciar sessão.&quot;</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER...&quot;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Log_out">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.Log_out">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Log_out</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Termina a sessão atual.&quot;&quot;&quot;</span>
+
+    <span class="k">global</span> <span class="n">session_user</span>
+    <span class="n">session_user</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Sessão terminada.&quot;</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER...&quot;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Alugar_Veiculo">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.Alugar_Veiculo">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Alugar_Veiculo</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Menu de aluguer de veículos (utilizador normal).&quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Escolheu a opção: Alugar Veículo&quot;</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER para continuar...&quot;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+    <span class="n">Alug</span> <span class="o">=</span> <span class="n">Alugar</span><span class="p">(</span><span class="n">session_user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+    <span class="n">Alug</span><span class="o">.</span><span class="n">menu</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Gerir_Reservas">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.Gerir_Reservas">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Gerir_Reservas</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Menu de gestão de reservas (admin).&quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Escolheu a opção: Gerir Reservas&quot;</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER para continuar...&quot;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+    <span class="n">Gerir</span> <span class="o">=</span> <span class="n">GerirReservas</span><span class="p">()</span>
+    <span class="n">Gerir</span><span class="o">.</span><span class="n">menu</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">session_user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Gerir_Carros">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.Gerir_Carros">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Gerir_Carros</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Menu de gestão de carros (admin).&quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Escolheu a opção: Gerir Carros (Admin)&quot;</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER para continuar...&quot;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+    <span class="n">svc</span> <span class="o">=</span> <span class="n">AdicionarCarros</span><span class="p">(</span><span class="s2">&quot;Bd/RentACar.db&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">svc</span><span class="o">.</span><span class="n">menu</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">session_user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">svc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Ver_Historico">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.Ver_Historico">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Ver_Historico</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Consulta histórico de alugueres (utilizador normal).&quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Escolheu a opção: Ver Histórico de Alugueres&quot;</span><span class="p">)</span>
+    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER para continuar...&quot;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">VerHistorico</span><span class="p">(</span><span class="s2">&quot;Bd/RentACar.db&quot;</span><span class="p">)</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">menu</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">session_user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Fechar">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.Fechar">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Fechar</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Encerra o programa.&quot;&quot;&quot;</span>
+
+    <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Obrigado por usar o Rent A Car! Até logo &quot;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../rent_a_car.html#rent_a_car.main">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loop principal de navegação do sistema.&quot;&quot;&quot;</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">session_user</span><span class="p">:</span>
+            <span class="n">menu_items</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Criar Conta&quot;</span><span class="p">,</span> <span class="n">CriarConta</span><span class="p">),</span>
+                <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Iniciar Sessão&quot;</span><span class="p">,</span> <span class="n">Log_in</span><span class="p">),</span>
+                <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Fechar Programa&quot;</span><span class="p">,</span> <span class="n">Fechar</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            
+            <span class="n">is_admin</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">session_user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_admin&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">is_admin</span><span class="p">:</span>
+                <span class="n">menu_items</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Gerir Reservas (Admin)&quot;</span><span class="p">,</span> <span class="n">Gerir_Reservas</span><span class="p">),</span>
+                    <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Gerir Carros (Admin)&quot;</span><span class="p">,</span> <span class="n">Gerir_Carros</span><span class="p">),</span>
+                    <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Terminar Sessão&quot;</span><span class="p">,</span> <span class="n">Log_out</span><span class="p">),</span>
+                    <span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Fechar Programa&quot;</span><span class="p">,</span> <span class="n">Fechar</span><span class="p">),</span>
+                <span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">menu_items</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Alugar Veículo&quot;</span><span class="p">,</span> <span class="n">Alugar_Veiculo</span><span class="p">),</span>
+                    <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Ver Histórico de Alugueres&quot;</span><span class="p">,</span> <span class="n">Ver_Historico</span><span class="p">),</span>
+                    <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Terminar Sessão&quot;</span><span class="p">,</span> <span class="n">Log_out</span><span class="p">),</span>
+                    <span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Fechar Programa&quot;</span><span class="p">,</span> <span class="n">Fechar</span><span class="p">),</span>
+                <span class="p">}</span>
+
+        <span class="n">display_menu</span><span class="p">(</span><span class="n">menu_items</span><span class="p">)</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Por favor, escolha uma opção: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">menu_items</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">func</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="n">func</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Opção inválida. Tente novamente.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pressione ENTER para continuar...&quot;</span><span class="p">)</span>
+            <span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Tomás Zambujo , Catarina Silva e Pedro Amaro.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
