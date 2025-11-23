@@ -4,13 +4,38 @@ import msvcrt
 DB_NAME = "Bd/RentACar.db"
 
 class AuthBase:
+
+    """Classe base para operações de autenticação.
+
+    Args:
+        db_name (str): Caminho da base de dados.
+    """
+
     def __init__(self, db_name: str = DB_NAME):
         self.db_name = db_name
 
     def conectar(self):
+
+        """Abre uma ligação à base de dados.
+
+        Returns:
+            sqlite3.Connection: Conexão ativa à BD.
+        """
+
         return sqlite3.connect(self.db_name)
 
     def buscar_utilizador(self, nome_ou_email):
+
+        """Procura um utilizador pelo nome ou email.
+
+        Args:
+            nome_ou_email (str): Nome ou email a procurar.
+
+        Returns:
+            tuple | None: Dados do utilizador (id, nome, email, password, is_admin)
+            ou None se não existir.
+        """
+
         conn = self.conectar()
         cursor = conn.cursor()
         cursor.execute(
@@ -22,11 +47,30 @@ class AuthBase:
         return resultado
 
 class Login(AuthBase):
+
+    """Gerencia a autenticação de utilizadores.
+
+    Args:
+        db_name (str): Caminho da base de dados.
+    """
+
     def __init__(self, db_name: str = DB_NAME):
         super().__init__(db_name)
         self.session_user = None
 
     def input_password(self, prompt: str = "Password: "):
+
+        """Lê a password com ocultação de caracteres.
+
+        A tecla TAB alterna entre mostrar/esconder a password.
+
+        Args:
+            prompt (str): Texto exibido antes da password.
+
+        Returns:
+            str: Password digitada pelo utilizador.
+        """
+
         password = ""
         mostrar = False
         print(prompt, end="", flush=True)
@@ -56,6 +100,15 @@ class Login(AuthBase):
         return password
 
     def autenticar(self):
+
+        """Realiza o processo de login de um utilizador.
+
+        Solicita nome/email + password e verifica na base de dados.
+
+        Returns:
+            bool: True se autenticado com sucesso, False caso contrário.
+        """
+
         print("=== Login ===")
         utilizador_input = input("Nome ou Email: ").strip()
         password_input = self.input_password("Password (Tab para mostrar/esconder): ")
