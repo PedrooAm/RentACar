@@ -3,15 +3,46 @@ from datetime import datetime
  
 
 class GerirReservas:
+
+    """Gestão de reservas do sistema.
+
+    Permite listar, alterar e cancelar reservas. Apenas administradores
+    têm acesso ao menu principal desta classe.
+    """
+
         
     def __init__(self, db_path="Bd/RentACar.db"):
+            
+            """Inicializa o gestor de reservas.
+
+            Args:
+            db_path (str): Caminho da base de dados.
+            """
+
             self.db_path = db_path
 
     def conectar(self):
+            
+            """Abre ligação com a base de dados.
+
+        Returns:
+            sqlite3.Connection: Conexão ativa à BD.
+        """
+
             return sqlite3.connect(self.db_path)
 
 
     def listar_reservas(self, user_id):
+
+        """Lista reservas existentes, filtrando por utilizador se fornecido.
+
+        Args:
+            user_id (int | None): ID do utilizador ou None para listar todas.
+
+        Returns:
+            None
+        """
+
         conn = self.conectar()
         cursor = conn.cursor()
 
@@ -55,6 +86,13 @@ class GerirReservas:
         input("Pressione ENTER para continuar...")
 
     def alterar_reserva(self, user_id=None):
+
+        """Altera as datas de uma reserva existente.
+
+        Args:
+            user_id (int | None): ID do utilizador ou None para admin.
+        """
+
         self.listar_reservas(user_id)
         reserva_id = input("ID da reserva a alterar ou 0 para cancelar alteração: "). strip()
 
@@ -125,6 +163,13 @@ class GerirReservas:
             print("Reserva alterada com sucesso! Sem diferença de preço.")
         
     def cancelar_reserva(self, user_id=None):
+
+        """Cancela uma reserva ativa.
+
+        Args:
+            user_id (int | None): ID do utilizador ou None para admin.
+        """
+
         self.listar_reservas(user_id)
         reserva_id = input("ID da reserva a cancelar ou 0 para cancelar a cancelação da reserva: ")
 
@@ -142,6 +187,13 @@ class GerirReservas:
         print("Reserva cancelada!")
 
     def menu(self, user_id=None):
+
+        """Menu principal de gestão de reservas (apenas administradores).
+
+        Args:
+            user_id (int): ID do utilizador autenticado.
+        """
+
 
         conn = self.conectar()
         cursor = conn.cursor()
