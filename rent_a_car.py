@@ -1,3 +1,24 @@
+"""
+
+Sistema RENT A CAR - Programa Principal
+
+Este módulo implementa o menu principal e o fluxo de navegação
+de um sistema Rent-A-Car. Ele tem como funcionalidade
+como:
+
+- Criação de conta
+- Autenticação de utilizadores
+- Aluguer de veículos
+- Gestão de reservas (Admin)
+- Gestão de carros (Admin)
+- Consulta de histórico de alugueres
+
+Também executa o controlo da sessão do utilizador, 
+mostrando opções diferentes consoante o tipo de utilizador
+(normal ou administrador).
+
+"""
+
 import sys
 from os import system
 from AlugarVeiculo import Alugar
