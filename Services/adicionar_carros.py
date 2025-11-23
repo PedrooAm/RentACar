@@ -4,14 +4,41 @@ import sys
 from os import system
 
 class AdicionarCarros:
+
+    """Gestão de carros (apenas para administradores).
+
+    Permite listar, adicionar e remover carros associados ao sistema.
+    
+    Args:
+        db_path (str): Caminho para a base de dados SQLite.
+    """
+
     def __init__(self, db_path: str = "Bd/RentACar.db") -> None:
         self.db_path = db_path
 
    
     def conectar(self):
+
+        """Abre uma ligação à base de dados.
+
+        Returns:
+            sqlite3.Connection: Conexão ativa à base de dados.
+        """
+
         return sqlite3.connect(self.db_path)
 
     def _is_admin(self, *, user_id: Optional[int] = None, username: Optional[str] = None) -> bool:
+
+        """Verifica se o utilizador é administrador.
+
+        Args:
+            user_id (int, optional): ID do utilizador.
+            username (str, optional): Username do utilizador.
+
+        Returns:
+            bool: True se for admin, False caso contrário.
+        """
+
         conn = self.conectar()
         cur = conn.cursor()
         if user_id is not None:
@@ -23,6 +50,20 @@ class AdicionarCarros:
         return bool(row and row[0] == 1)
 
     def _resolve_admin_id(self, *, user_id: Optional[int] = None, username: Optional[str] = None) -> int:
+
+        """Obtém o ID do admin e valida permissões.
+
+        Args:
+            user_id (int, optional): ID do utilizador.
+            username (str, optional): Username do utilizador.
+
+        Raises:
+            PermissionError: Se o utilizador não existir ou não for admin.
+
+        Returns:
+            int: ID do utilizador admin.
+        """
+
         conn = self.conectar()
         cur = conn.cursor()
         if user_id is not None:
@@ -40,6 +81,13 @@ class AdicionarCarros:
 
    
     def listar_carros(self) -> list:
+
+        """Lista todos os carros registados.
+
+        Returns:
+            list: Lista de tuplos com dados dos carros.
+        """
+
         conn = self.conectar()
         cur = conn.cursor()
         cur.execute("SELECT id, marca, modelo, matricula, user_id, preco_dia, estado FROM carros ORDER BY id DESC")
@@ -58,6 +106,26 @@ class AdicionarCarros:
         preco_dia: float,
         estado: str = "Disponível",
     ) -> int:
+        
+        """Adiciona um novo carro à base de dados.
+
+        Args:
+            by_user_id (int, optional): ID do utilizador que executa a ação.
+            by_username (str, optional): Username do utilizador que executa a ação.
+            marca (str): Marca do carro.
+            modelo (str): Modelo do carro.
+            matricula (str): Matrícula do carro.
+            preco_dia (float): Preço por dia em euros.
+            estado (str): Estado atual do carro (ex: "Disponível").
+
+        Raises:
+            PermissionError: Se o utilizador não for admin.
+            sqlite3.IntegrityError: Se a matrícula for duplicada ou dados forem inválidos.
+
+        Returns:
+            int: ID do carro recém inserido.
+        """
+
         admin_id = self._resolve_admin_id(user_id=by_user_id, username=by_username)
         conn = self.conectar()
         cur = conn.cursor()
@@ -86,6 +154,19 @@ class AdicionarCarros:
         car_id: int,
     ) -> None:
         
+        """Remove um carro da base de dados.
+
+        Args:
+            by_user_id (int, optional): ID do utilizador que executa a ação.
+            by_username (str, optional): Username do utilizador que executa a ação.
+            car_id (int): ID do carro a remover.
+
+        Raises:
+            PermissionError: Se o utilizador não for admin.
+            ValueError: Se o carro não existir.
+        """
+
+        
         admin_id = self._resolve_admin_id(user_id=by_user_id, username=by_username)
         conn = self.conectar()
         cur = conn.cursor()
@@ -103,6 +184,14 @@ class AdicionarCarros:
 
   
     def menu(self, user_id: Optional[int] = None, username: Optional[str] = None) -> None:
+
+        """Menu interativo de gestão de carros (apenas admins).
+
+        Args:
+            user_id (int, optional): ID do utilizador autenticado.
+            username (str, optional): Username do utilizador autenticado.
+        """
+
         
         if not self._is_admin(user_id=user_id, username=username):
             print("Acesso negado! Apenas administradores podem gerir carros.")
