@@ -67,6 +67,7 @@ Breve descrição de cada item
    - O utilizador pode:
      - Criar nova conta → módulo `User/CriarConta.py`
      - Iniciar sessão → módulo `User/LogIn.py`
+        - Para ter ações de admin, inicie sessão com ``(User: Admin , pass: 123456)``
    - Algumas ações exigem sessão iniciada (ex.: ver histórico, gerir reservas).
 
 ---
@@ -169,3 +170,35 @@ Bem-vindo(a), Nicol!
 Sessão iniciada com sucesso!
 Pressione ENTER...
 ---------------------------------------
+==============================
+       MENU RENT A CAR
+==============================
+
+Utilizador: Nicol | Email: nico@gmail.com
+
+1 - Alugar Veículo
+2 - Ver Histórico de Alugueres
+3 - Terminar Sessão
+4 - Fechar Programa
+
+Por favor, escolha uma opção: 2
+
+Escolheu a opção: Ver Histórico de Alugueres
+Pressione ENTER para continuar...
+
+-------------------------------------
+
+--- HISTÓRICO DE ALUGUERES ---
+1. Ver carro atual
+2. Ver histórico de carros utilizados
+3. Próxima reserva
+4. Voltar
+Escolha uma opção: 3
+
+--- PRÓXIMA RESERVA ---
+Carro: Saab tuning | Matrícula: 34JI35
+De: 2025-12-02  Até: 2025-12-10
+Preço total: 279€
+-----------------------
+Pressione ENTER para continuar...
+
