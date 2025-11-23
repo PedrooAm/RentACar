@@ -1,9 +1,31 @@
+"""Módulo de aluguer de veículos.
+
+Este módulo implementa o fluxo de aluguer de veículos para um utilizador
+autenticado no sistema Rent A Car. As principais funcionalidades incluem:
+
+- Apresentar um menu específico de aluguer
+- Listar carros disponíveis para aluguer
+- Registar o aluguer de um veículo
+- Consultar alugueres activos do utilizador
+- Cancelar um aluguer existente
+- Voltar ao menu principal do programa
+"""
+
+
+
 import sys
 from os import system
 import sqlite3
 from Services.Carros import Carros 
 
 class Alugar:
+
+    """Gerencia o processo de aluguer de veículos para um utilizador.
+
+    Args:
+        user_id (int): ID do utilizador autenticado.
+    """
+
     def __init__(self,user_id):
         self.user_id = user_id
         self.menu_items = {
@@ -14,15 +36,28 @@ class Alugar:
         }
 
     def conectar(self):
+
+        """Estabelece conexão com a base de dados.
+
+        Returns:
+            sqlite3.Connection: Conexão aberta com o ficheiro da BD.
+        """
+
         return sqlite3.connect("Bd/RentACar.db")
     
     def display_menu(self):
+
+        """Mostra o menu de opções do módulo de aluguer."""
+
         system('cls')
         print("\n===== MENU ALUGAR VEÍCULO =====")
         for key, (descricao, _) in self.menu_items.items():
             print(f"{key} - {descricao}")
 
     def listar_carros_disponiveis(self):
+
+        """Mostra carros disponíveis e permite ao utilizador alugar um veículo."""
+
         system('cls')
         carros = Carros()
         lista = carros.listar_disponiveis()
@@ -64,6 +99,13 @@ class Alugar:
 
 
     def consultar_aluguel(self):
+
+        """Lista alugueres ativos do utilizador e permite cancelar um aluguer.
+
+        Returns:
+            list: Lista de alugueres atuais do utilizador.
+        """
+
         system('cls')
         print("Veículos atualmente alugados:\n")
         conn = self.conectar()
@@ -122,12 +164,18 @@ class Alugar:
     
 
     def voltar_ao_main(self):
+
+        """Retorna ao menu principal."""
+
         print("Escolheu a opção : Voltar ao menu principal")
         input("Clique ENTER para continuar\n")
         system('cls')
         return
 
     def menu(self):
+
+        """Executa o loop do menu de aluguer e aguarda a escolha do utilizador."""
+
         while True:
             self.display_menu()
             selection_str = input("Por favor escolha uma opção: ").strip()
