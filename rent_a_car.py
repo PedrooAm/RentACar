@@ -32,6 +32,29 @@ login_system = Login()
 session_user = None
 
 def display_menu(menu):
+
+    """
+    Apresenta o cabeçalho e as opções do menu atual.
+
+    Parâmetros
+    ----------
+    menu : dict[str, (str, Callable)]
+        Dicionário onde a chave é o identificador da opção (ex.: "1")
+        e o valor é um tuplo (descrição, função a executar).
+
+    Efeitos colaterais
+    ------------------
+    - Limpa o ecrã (system('cls')).
+    - Imprime no stdout o cabeçalho e a lista de opções.
+    - Mostra, quando existir, o resumo do utilizador autenticado.
+
+    Notas
+    -----
+    - Pressupõe que cada valor do dicionário contém exatamente
+      (descrição, função). Não valida duplicados.
+    """
+
+
     system('cls')
     print("\n==============================")
     print("       MENU RENT A CAR          ")
@@ -46,7 +69,29 @@ def display_menu(menu):
         print(f"{key} - {descricao}")
     print()
 
+
+
+
 def CriarConta():
+
+    """
+    Fluxo de criação de conta de utilizador.
+
+    Pré-condições
+    -------------
+    - Nenhuma. Pode ser executado sem sessão.
+
+    Efeitos colaterais
+    ------------------
+    - Interação via input() para avançar.
+    - Limpa o ecrã antes de invocar o fluxo de criação.
+    - Invoca `Conta().criar_conta()` (módulo User.CriarConta).
+
+    Exceções
+    --------
+    - Propaga exceções lançadas pela camada `Conta`.
+    """
+    
     print("\nEscolheu a opção: Criar Conta")
     input("Pressione ENTER para continuar....")
     system('cls')
@@ -54,6 +99,24 @@ def CriarConta():
     criar.criar_conta()
 
 def Log_in():
+
+    """
+    Executa o processo de autenticação e atualiza o estado de sessão global.
+
+    Efeitos colaterais
+    ------------------
+    - Modifica as variáveis globais `session_user` e `login_system`.
+    - Interação via input() e impressão de mensagens de sucesso/erro.
+    - Limpa o ecrã no início e no fim.
+
+    Fluxo
+    -----
+    1) Cria uma instância de `Login`.
+    2) Chama `autenticar()`; se sucesso, copia `session_user` da instância.
+    3) Informa o utilizador e regressa ao menu.
+    """
+
+
     global session_user, login_system
     print("\nEscolheu a opção: Iniciar Sessão")
     input("Pressione ENTER para continuar...")
@@ -70,6 +133,9 @@ def Log_in():
     system('cls')
 
 def Log_out():
+
+    """Termina a sessão atual."""
+
     global session_user
     session_user = None
     print("\nSessão terminada.")
@@ -77,6 +143,9 @@ def Log_out():
     system('cls')
 
 def Alugar_Veiculo():
+
+    """Menu de aluguer de veículos (utilizador normal)."""
+
     print("\nEscolheu a opção: Alugar Veículo")
     input("Pressione ENTER para continuar...")
     system('cls')
@@ -84,6 +153,9 @@ def Alugar_Veiculo():
     Alug.menu()
 
 def Gerir_Reservas():
+
+    """Menu de gestão de reservas (admin)."""
+
     print("\nEscolheu a opção: Gerir Reservas")
     input("Pressione ENTER para continuar...")
     system('cls')
@@ -91,6 +163,9 @@ def Gerir_Reservas():
     Gerir.menu(user_id=session_user.get("id"))
 
 def Gerir_Carros():
+
+    """Menu de gestão de carros (admin)."""
+
     print("\nEscolheu a opção: Gerir Carros (Admin)")
     input("Pressione ENTER para continuar...")
     system('cls')
@@ -104,6 +179,9 @@ def Gerir_Carros():
             pass
 
 def Ver_Historico():
+
+    """Consulta histórico de alugueres (utilizador normal)."""
+
     print("\nEscolheu a opção: Ver Histórico de Alugueres")
     input("Pressione ENTER para continuar...")
     system('cls')
@@ -111,13 +189,19 @@ def Ver_Historico():
     hist.menu(user_id=session_user.get("id"))
 
 def Fechar():
+
+    """Encerra o programa."""
+
     system('cls')
     print("\nObrigado por usar o Rent A Car! Até logo ")
     sys.exit()
 
 def main():
+
+    """Loop principal de navegação do sistema."""
+
     while True:
-        # monta o menu conforme o estado da sessão
+        
         if not session_user:
             menu_items = {
                 "1": ("Criar Conta", CriarConta),
@@ -125,7 +209,7 @@ def main():
                 "3": ("Fechar Programa", Fechar),
             }
         else:
-            # utilizador autenticado
+            
             is_admin = bool(session_user.get("is_admin"))
             if is_admin:
                 menu_items = {
