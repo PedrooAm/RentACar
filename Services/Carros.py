@@ -5,7 +5,21 @@ from pathlib import Path
 DB_PATH = Path(__file__).resolve().parent.parent / "Bd" / "RentACar.db"
 
 class Carros:
+
+    """Gestão de veículos da base de dados.
+
+    Responsável por garantir estrutura da tabela, listar carros,
+    validar datas, marcar alugueres e cancelar alugueres.
+    """
+
     def conectar(self):
+
+        """Garante existência da pasta da BD e liga ao ficheiro SQLite.
+
+        Returns:
+            sqlite3.Connection: Conexão ativa à base de dados.
+        """
+
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
         return sqlite3.connect(str(DB_PATH))
 
@@ -13,6 +27,9 @@ class Carros:
     #   GARANTE QUE AS COLUNAS EXISTEM
     # =============================================
     def _ensure_columns(self):
+
+        """Garante que colunas novas existem na tabela `carros`."""
+
         conn = self.conectar()
         cursor = conn.cursor()
         try:
@@ -34,6 +51,9 @@ class Carros:
     #   GARANTE QUE TABELA RESERVAS EXISTE
     # =============================================
     def _ensure_reservas(self):
+
+        """Garante que a tabela `reservas` existe na BD."""
+
         conn = self.conectar()
         cursor = conn.cursor()
         cursor.execute("""
@@ -54,6 +74,13 @@ class Carros:
     #   LISTAR CARROS
     # =============================================
     def Listar(self):
+
+        """Mostra no terminal a lista de carros disponíveis.
+
+        Returns:
+            list: Lista de tuplos com carros disponíveis.
+        """
+
         self._ensure_columns()
         conn = self.conectar()
         cursor = conn.cursor()
@@ -67,6 +94,13 @@ class Carros:
         return carros
 
     def listar_disponiveis(self):
+
+        """Lista carros disponíveis sem imprimir nada.
+
+        Returns:
+            list: Lista de carros disponíveis.
+        """
+
         self._ensure_columns()
         conn = self.conectar()
         cursor = conn.cursor()
@@ -76,6 +110,16 @@ class Carros:
         return carros
 
     def listar_alugados(self, user_id):
+
+        """Lista carros alugados por um utilizador.
+
+        Args:
+            user_id (int): ID do utilizador.
+
+        Returns:
+            list: Carros alugados pelo utilizador.
+        """
+
         self._ensure_columns()
         if not user_id:
             return []
@@ -95,6 +139,16 @@ class Carros:
     #   VALIDAR DATA
     # =============================================
     def _valid_date(self, date_str):
+
+        """Valida formato de data YYYY-MM-DD.
+
+        Args:
+            date_str (str): Data a validar.
+
+        Returns:
+            bool: True se válida, caso contrário False.
+        """
+
         try:
             datetime.strptime(date_str, "%Y-%m-%d")
             return True
@@ -105,6 +159,20 @@ class Carros:
     #   MARCAR CARRO COMO ALUGADO (CORRIGIDO)
     # =============================================
     def marcar_alugado(self, matricula, user_id):
+
+        """Marca um carro como alugado e regista uma reserva.
+
+        Pede datas ao utilizador, valida disponibilidade e grava
+        os dados na base de dados.
+
+        Args:
+            matricula (str): Matrícula do carro.
+            user_id (int): ID do utilizador que vai alugar.
+
+        Returns:
+            bool: True se aluguer for registado, False caso contrário.
+        """
+
 
         self._ensure_columns()
         self._ensure_reservas()
@@ -192,6 +260,16 @@ class Carros:
     #   CANCELAR ALUGUEL
     # =============================================
     def cancelar_aluguel(self, matricula):
+
+        """Cancela o aluguer de um carro.
+
+        Args:
+            matricula (str): Matrícula do carro.
+
+        Returns:
+            bool: True se foi alterado, False caso contrário.
+        """
+
         self._ensure_columns()
         conn = self.conectar()
         cursor = conn.cursor()
